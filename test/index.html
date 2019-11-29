@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+</head>
+<body>
+	
+<script src="./vue.js"></script>
+<script src="../dist/vue-insertable.js"></script>
+
+<div id="app">
+  <h1>Hello App!</h1>
+	<!-- 使用 insert-view 组件在插入注册的组件 -->
+	<!-- name 为注册的名称 -->
+	<!-- <insert-view /> 会渲染出指定注册名的所有组件 -->
+	<!-- <insert-view /> 会将属性及事件传递给组件 -->
+	<insert-view name="insert1" custom-attribute="myValue"></insert-view>
+	<!-- 渲染结果同下： -->
+	<!-- <vue-com1 name="insert1" custom-attribute="myValue"></vue-com1> -->
+	<!-- <vue-com2 name="insert1" custom-attribute="myValue"></vue-com2> -->
+	<!-- <vue-com1 name="insert1" custom-attribute="myValue"></vue-com1> -->
+	<!-- 同一组件组件在同一名称下注册多次，将会被渲染多次 -->
+
+	<insert-view name="insert2" custom-attribute="myValue"></insert-view>
+	<!-- 渲染结果同下： -->
+	<!-- <vue-com3 name="insert2" custom-attribute="myValue" class="a"></vue-com3> -->
+	<!-- <vue-com2 name="insert2" custom-attribute="myValue" class="a"></vue-com2> -->
+	<!-- <vue-com1 name="insert2" custom-attribute="myValue" class="a"></vue-com1> -->
+	<!-- <div name="insert2" custom-attribute="myValue" class="a"></div> -->
+	<!-- 普通的 html 标签也支持 -->
+
+	<!-- <insert-view /> 如果被引入多次将会被渲染多次，，即便 name 相同 -->
+	<insert-view name="insert1"></insert-view>
+	<!-- 渲染结果同下： -->
+	<!-- <vue-com1 name="insert1"></vue-com1> -->
+	<!-- <vue-com2 name="insert1"></vue-com2> -->
+	<!-- <vue-com1 name="insert1"></vue-com1> -->
+</div>
+<script>
+	// 0. 如果使用模块化机制编程，导入Vue和VueInsertable，要调用 Vue.use(VueInsertable)
+
+
+	// 1. 定义组件。
+	// 可以从其他文件 import 进来
+	const VueCom1 = {props: ['customAttribute'], template: `<div @click="$emit('click', '666')">{{customAttribute}}组件1</div>`};
+	const VueCom2 = {template: '<div>组件2</div>'};
+	const VueCom3 = {template: '<div>组件3</div>'};
+
+
+	// 2. 创建 insertable 实例
+	const insertable = new VueInsertable()
+
+
+	// 3. 添加组件
+	insertable.add('insert1', VueCom1);
+	insertable.add('insert1', VueCom2);
+	// 同一组件组件在同一名称下注册多次，将会被渲染多次
+	insertable.add('insert1', VueCom1);
+
+	insertable.add('insert2', VueCom3);
+	insertable.add('insert2', VueCom2);
+	insertable.add('insert2', VueCom1);
+	// 普通的 html 标签也支持
+	insertable.add('insert2', 'div');
+
+
+	// 4. 创建和挂载根实例。
+	// 记得要通过 insertable 配置参数注入，
+	// 从而让整个应用都有 insertable 功能
+	const app = new Vue({
+		insertable,
+	}).$mount('#app');
+	// 现在，应用已经启动了！
+</script>
+</body>
+</html>
