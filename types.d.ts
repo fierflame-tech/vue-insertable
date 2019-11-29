@@ -1,6 +1,6 @@
 
 /*!
- * vue-router v0.0.0
+ * vue-router v0.1.0
  * (c) 2019 Wang Chenxu
  * @license MIT
  */

@@ -1,7 +1,7 @@
 {
   "name": "vue-insertable",
   "description": "Insert components in Vue page",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "scripts": {
     "build": "rollup -c",
     "lint": "eslint --ext .ts src",

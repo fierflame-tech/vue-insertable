@@ -1,6 +1,6 @@
 
 /*!
- * vue-router v0.0.0
+ * vue-router v0.1.0
  * (c) 2019 Wang Chenxu
  * @license MIT
  */
@@ -295,7 +295,7 @@ class Insertable {
 
 }
 
-_defineProperty(Insertable, "version", '0.0.0');
+_defineProperty(Insertable, "version", '0.1.0');
 
 module.exports = Insertable;
 //# sourceMappingURL=vue-insertable.common.js.map

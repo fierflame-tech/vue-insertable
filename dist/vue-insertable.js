@@ -1,6 +1,6 @@
 
 /*!
- * vue-router v0.0.0
+ * vue-router v0.1.0
  * (c) 2019 Wang Chenxu
  * @license MIT
  */
@@ -301,7 +301,7 @@
 
   }
 
-  _defineProperty(Insertable, "version", '0.0.0');
+  _defineProperty(Insertable, "version", '0.1.0');
 
   if (Vue) {
     install(Vue);
