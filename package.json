@@ -1,0 +1,65 @@
+{
+  "name": "vue-insertable",
+  "description": "Insert components in Vue page",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "rollup -c",
+    "lint": "eslint --ext .ts src",
+    "lint-fix": "eslint --fix --ext .ts src"
+  },
+  "files": [
+    "types.d.ts",
+    "README.md",
+    "LICENSE",
+    "dist"
+  ],
+  "license": "MIT",
+  "typings": "./types",
+  "devDependencies": {
+    "@babel/cli": "^7.7.0",
+    "@babel/core": "^7.7.2",
+    "@babel/plugin-proposal-class-properties": "^7.7.0",
+    "@babel/plugin-proposal-do-expressions": "^7.6.0",
+    "@babel/plugin-proposal-function-bind": "^7.2.0",
+    "@babel/plugin-proposal-logical-assignment-operators": "^7.2.0",
+    "@babel/plugin-proposal-numeric-separator": "^7.2.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
+    "@babel/plugin-proposal-optional-catch-binding": "^7.2.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.6.0",
+    "@babel/plugin-proposal-partial-application": "^7.4.4",
+    "@babel/plugin-proposal-private-methods": "^7.6.0",
+    "@babel/plugin-proposal-throw-expressions": "^7.2.0",
+    "@babel/plugin-transform-typescript": "^7.7.2",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
+    "@typescript-eslint/eslint-plugin": "^1.13.0",
+    "babel-eslint": "^11.0.0-beta.0",
+    "eslint": "^6.6.0",
+    "eslint-plugin-babel": "^5.3.0",
+    "rollup": "^1.26.3",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-dts": "^1.1.12",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-replace": "^2.2.0",
+    "typescript": "^3.7.2",
+    "vue": "^2.6.10"
+  },
+  "dependencies": {
+    "rollup-plugin-terser": "^5.1.2"
+  },
+  "main": "dist/vue-insertable.common.js",
+  "module": "dist/vue-insertable.esm.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wangchenxu-tech/vue-insertable.git"
+  },
+  "keywords": [
+    "vue",
+    "insertable"
+  ],
+  "author": "Wang Chenxu",
+  "bugs": {
+    "url": "https://github.com/wangchenxu-tech/vue-insertable/issues"
+  },
+  "homepage": "https://github.com/wangchenxu-tech/vue-insertable#readme"
+}
