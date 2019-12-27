@@ -15,7 +15,7 @@ https://unpkg.com/vue-insertable/dist/vue-insertable.js
 
 [Unpkg.com](https://unpkg.com/) 提供了基于 NPM 的 CDN 链接。上面的链接会一直指向在 NPM 发布的最新版本。你也可以像 https://unpkg.com/vue-insertable@0.1.0/dist/vue-insertable.js 这样指定 版本号 或者 Tag。  
 
-在 Vue 后面加载 vue-router，它会自动安装的：
+在 Vue 后面加载 vue-insertable，它会自动安装的：
 
 ```html
 <script src="/path/to/vue.js"></script>

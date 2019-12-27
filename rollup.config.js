@@ -5,13 +5,16 @@ import dts from 'rollup-plugin-dts';
 import replace from 'rollup-plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 import fsFn from 'fs';
-const { version } = JSON.parse(fsFn.readFileSync('./package.json'));
+const { name, version, author, license } = JSON.parse(fsFn.readFileSync('./package.json'));
+
+const beginYear = 2019;
+const year = new Date().getFullYear();
 
 const banner = `
 /*!
- * vue-router v${ version }
- * (c) ${ new Date().getFullYear() } Wang Chenxu
- * @license MIT
+ * ${ name } v${ version }
+ * (c) ${ beginYear === year ? beginYear : `${ beginYear }-${ year }` } ${ author }
+ * @license ${ license }
  */
 `;
 export default [
