@@ -1,7 +1,7 @@
 
 /*!
- * vue-router v0.1.0
- * (c) 2019 Wang Chenxu
+ * vue-insertable v0.1.1
+ * (c) 2019-2020 Fierflame
  * @license MIT
  */
 
@@ -139,46 +139,23 @@
 
   };
 
-  let _vue;
+  class Insertable {
+    constructor(parent, options) {
+      _defineProperty(this, "_inited", false);
 
-  function install(Vue) {
-    if (_vue === Vue) {
-      return;
-    }
+      _defineProperty(this, "parent", void 0);
 
-    _vue = Vue;
-    Object.defineProperty(Vue.prototype, '$insertable', {
-      get() {
-        if (this.$parent) {
-          return this.$parent.$insertable;
-        }
-      },
+      _defineProperty(this, "_groups", Object.create(null));
 
-      configurable: true
-    });
-    Vue.component('InsertView', InsertView);
-    Vue.mixin({
-      beforeCreate() {
-        const options = this.$options;
-
-        if (options.insertable) {
-          Object.defineProperty(this, '$insertable', {
-            value: typeof options.insertable === 'function' ? options.insertable() : options.insertable,
-            configurable: true
-          });
-        }
+      if (parent instanceof Insertable) {
+        this.parent = parent;
+      } else {
+        [parent, options] = [, parent];
       }
 
-    });
-  }
-
-  class Insertable {
-    constructor({
-      groups = {}
-    } = {}) {
-      _defineProperty(this, "groups", Object.create(null));
-
-      _defineProperty(this, "_inited", false);
+      const {
+        groups = {}
+      } = options || {};
 
       for (let k in groups) {
         this.set(k, groups);
@@ -187,22 +164,22 @@
 
     init() {
       if (this._inited) {
-        return this.groups;
+        return this._groups;
       }
 
       if (!_vue) {
-        return this.groups;
+        return this._groups;
       }
 
       this._inited = true;
       const groups = Object.create(null);
-      const old = this.groups;
+      const old = this._groups;
 
       for (const k in old) {
         _vue.set(groups, k, old[k]);
       }
 
-      this.groups = groups;
+      this._groups = groups;
       return groups;
     }
 
@@ -283,10 +260,30 @@
       }
     }
 
-    get(name) {
+    _getInfo(name, noParentList) {
       const groups = this.init();
       const list = groups[name] || [];
-      return list.map(({
+
+      if (noParentList) {
+        return list;
+      }
+
+      const parentList = this.parent ? this.parent._getInfo(name) : [];
+      const allList = [...parentList, ...list];
+
+      if (list.length && parentList.length) {
+        allList.sort(({
+          order: a
+        }, {
+          order: b
+        }) => a - b);
+      }
+
+      return allList;
+    }
+
+    get(name, noParentList) {
+      return this._getInfo(name, noParentList).map(({
         component
       }) => component);
     }
@@ -301,7 +298,45 @@
 
   }
 
-  _defineProperty(Insertable, "version", '0.1.0');
+  _defineProperty(Insertable, "version", '0.1.1');
+
+  let _vue;
+
+  function install(Vue) {
+    if (_vue === Vue) {
+      return;
+    }
+
+    _vue = Vue;
+    Object.defineProperty(Vue.prototype, '$insertable', {
+      get() {
+        if (this.$parent) {
+          return this.$parent.$insertable;
+        }
+      },
+
+      configurable: true
+    });
+    Vue.component('InsertView', InsertView);
+    Vue.mixin({
+      beforeCreate() {
+        const options = this.$options;
+        let insertable = options.insertable;
+
+        if (typeof insertable === 'function') {
+          insertable = insertable(this.$parent && this.$parent.$insertable);
+        }
+
+        if (insertable instanceof Insertable) {
+          Object.defineProperty(this, '$insertable', {
+            value: insertable,
+            configurable: true
+          });
+        }
+      }
+
+    });
+  }
 
   if (Vue) {
     install(Vue);

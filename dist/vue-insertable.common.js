@@ -1,7 +1,7 @@
 
 /*!
- * vue-router v0.1.0
- * (c) 2019 Wang Chenxu
+ * vue-insertable v0.1.1
+ * (c) 2019-2020 Fierflame
  * @license MIT
  */
 
@@ -154,10 +154,15 @@ function install(Vue) {
   Vue.mixin({
     beforeCreate() {
       const options = this.$options;
+      let insertable = options.insertable;
 
-      if (options.insertable) {
+      if (typeof insertable === 'function') {
+        insertable = insertable(this.$parent && this.$parent.$insertable);
+      }
+
+      if (insertable instanceof Insertable) {
         Object.defineProperty(this, '$insertable', {
-          value: typeof options.insertable === 'function' ? options.insertable() : options.insertable,
+          value: insertable,
           configurable: true
         });
       }
@@ -167,12 +172,22 @@ function install(Vue) {
 }
 
 class Insertable {
-  constructor({
-    groups = {}
-  } = {}) {
-    _defineProperty(this, "groups", Object.create(null));
-
+  constructor(parent, options) {
     _defineProperty(this, "_inited", false);
+
+    _defineProperty(this, "parent", void 0);
+
+    _defineProperty(this, "_groups", Object.create(null));
+
+    if (parent instanceof Insertable) {
+      this.parent = parent;
+    } else {
+      [parent, options] = [, parent];
+    }
+
+    const {
+      groups = {}
+    } = options || {};
 
     for (let k in groups) {
       this.set(k, groups);
@@ -181,22 +196,22 @@ class Insertable {
 
   init() {
     if (this._inited) {
-      return this.groups;
+      return this._groups;
     }
 
     if (!_vue) {
-      return this.groups;
+      return this._groups;
     }
 
     this._inited = true;
     const groups = Object.create(null);
-    const old = this.groups;
+    const old = this._groups;
 
     for (const k in old) {
       _vue.set(groups, k, old[k]);
     }
 
-    this.groups = groups;
+    this._groups = groups;
     return groups;
   }
 
@@ -277,10 +292,30 @@ class Insertable {
     }
   }
 
-  get(name) {
+  _getInfo(name, noParentList) {
     const groups = this.init();
     const list = groups[name] || [];
-    return list.map(({
+
+    if (noParentList) {
+      return list;
+    }
+
+    const parentList = this.parent ? this.parent._getInfo(name) : [];
+    const allList = [...parentList, ...list];
+
+    if (list.length && parentList.length) {
+      allList.sort(({
+        order: a
+      }, {
+        order: b
+      }) => a - b);
+    }
+
+    return allList;
+  }
+
+  get(name, noParentList) {
+    return this._getInfo(name, noParentList).map(({
       component
     }) => component);
   }
@@ -295,7 +330,7 @@ class Insertable {
 
 }
 
-_defineProperty(Insertable, "version", '0.1.0');
+_defineProperty(Insertable, "version", '0.1.1');
 
 module.exports = Insertable;
 //# sourceMappingURL=vue-insertable.common.js.map
