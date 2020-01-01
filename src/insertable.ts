@@ -12,26 +12,34 @@ export interface Options {
 	groups?: {[key: string]: InsertableComponent | InsertableComponent[]}
 }
 class Insertable {
-	constructor(options: Options);
-	constructor({ groups = {} }: Options = {}) {
+	private _inited = false;
+	readonly parent?: Insertable;
+	private _groups: {[key: string]: Info[]} = Object.create(null);
+	constructor(options?: Options);
+	constructor(parent: Insertable, options?: Options);
+	constructor(parent?: Insertable | Options, options?: Options) {
+		if (parent instanceof Insertable) {
+			this.parent = parent;
+		} else {
+			[parent, options] = [, parent];
+		}
+		const { groups = {} } = options || {};
 		for (let k in groups) {
 			this.set(k, groups);
 		}
 	}
-	init(): {[key: string]: Info[]} {
-		if (this._inited) { return this.groups; }
-		if (!Vue) { return this.groups; }
+	private init(): {[key: string]: Info[]} {
+		if (this._inited) { return this._groups; }
+		if (!Vue) { return this._groups; }
 		this._inited = true;
 		const groups = Object.create(null);
-		const old = this.groups;
+		const old = this._groups;
 		for (const k in old) {
 			Vue.set(groups, k, old[k]);
 		}
-		this.groups = groups;
+		this._groups = groups;
 		return groups;
 	}
-	groups: {[key: string]: Info[]} = Object.create(null);
-	_inited = false;
 	add(name: string, components: InsertableComponent | InsertableComponent[], order = 0) {
 		const groups = this.init();
 		if (!Array.isArray(components)) { components = [components]; }
@@ -77,10 +85,19 @@ class Insertable {
 			groups[name] = list;
 		}
 	}
-	get(name: string): InsertableComponent[] {
+	private _getInfo(name: string, noParentList?: boolean): Info[] {
 		const groups = this.init();
 		const list = groups[name] || [];
-		return list.map(({component}) => component);
+		if (noParentList) { return list; }
+		const parentList = this.parent ? this.parent._getInfo(name) : [];
+		const allList = [...parentList, ...list];
+		if (list.length && parentList.length) {
+			allList.sort(({order: a}, {order: b}) => a - b);
+		}
+		return allList;
+	}
+	get(name: string, noParentList?: boolean): InsertableComponent[] {
+		return this._getInfo(name, noParentList).map(({component}) => component);
 	}
 	static get install() { return install; };
 	static get View() { return InsertView; };
