@@ -12,10 +12,14 @@ export default function install(Vue: VueConstructor) {
 	Vue.component('InsertView', InsertView);
 	Vue.mixin({
 		beforeCreate(this: VueConstructor['prototype'] & {$insertable?: Insertable, $parent: {$insertable?: Insertable}}) {
-			const options = this.$options as {insertable?: Insertable | (() => Insertable)};
-			if (options.insertable) {
+			const options = this.$options as {insertable?: Insertable | ((parent?: Insertable) => Insertable)};
+			let insertable =  options.insertable;
+			if (typeof insertable === 'function') {
+				insertable = insertable(this.$parent && this.$parent.$insertable);
+			}
+			if (insertable instanceof Insertable) {
 				Object.defineProperty(this, '$insertable', {
-					value: typeof options.insertable === 'function' ? options.insertable() : options.insertable,
+					value: insertable,
 					configurable: true,
 				});
 			}
